@@ -8,6 +8,7 @@ from pytorch3d.renderer import (
     PointsRasterizer,
 )
 import imageio
+import numpy as np  
 
 def save_checkpoint(epoch, model, args, best=False):
     if best:
@@ -68,17 +69,18 @@ def viz_seg (verts, labels, path, device):
     R, T = pytorch3d.renderer.cameras.look_at_view_transform(dist=dist, elev=elev, azim=azim, device=device)
     c = pytorch3d.renderer.FoVPerspectiveCameras(R=R, T=T, fov=60, device=device)
 
-    sample_verts = verts.unsqueeze(0).repeat(30,1,1).to(torch.float)
-    sample_labels = labels.unsqueeze(0)
-    sample_colors = torch.zeros((1,10000,3))
+    # Ensure all tensors are on the correct device
+    sample_verts = verts.unsqueeze(0).repeat(30,1,1).to(device)
+    sample_labels = labels.unsqueeze(0).to(device)
+    sample_colors = torch.zeros((1,10000,3), device=device)
 
     # Colorize points based on segmentation labels
     for i in range(6):
-        sample_colors[sample_labels==i] = torch.tensor(colors[i])
+        sample_colors[sample_labels==i] = torch.tensor(colors[i], device=device)
 
-    sample_colors = sample_colors.repeat(30,1,1).to(torch.float)
+    sample_colors = sample_colors.repeat(30,1,1)
 
-    point_cloud = pytorch3d.structures.Pointclouds(points=sample_verts, features=sample_colors).to(device)
+    point_cloud = pytorch3d.structures.Pointclouds(points=sample_verts, features=sample_colors)
 
     renderer = get_points_renderer(image_size=image_size, background_color=background_color, device=device)
     rend = renderer(point_cloud, cameras=c).cpu().numpy() # (30, 256, 256, 3)
@@ -86,3 +88,40 @@ def viz_seg (verts, labels, path, device):
 
     imageio.mimsave(path, rend, fps=15)
 
+def viz_cls (args, verts, labels, path, device):
+    """
+    visualize classification result
+    output: a 360-degree gif
+    """
+    image_size=256
+    background_color=(1, 1, 1)
+    point_color = torch.tensor([0.7, 0.0, 0.0]).unsqueeze(0).to(device)  # Single color for all points
+
+    # Create point cloud with single color
+    points = verts.unsqueeze(0)
+    rgba = torch.ones_like(points).to(device) * point_color
+    point_cloud = pytorch3d.structures.Pointclouds(
+        points=points,
+        features=rgba,
+    ).to(device)
+
+    # Setup renderer with lights
+    renderer = get_points_renderer(image_size=image_size, background_color=background_color, device=device)
+    lights = pytorch3d.renderer.PointLights(location=[[0, 0, -3]], device=device)
+
+    # Generate multiple viewpoints 
+    rends = []
+    dist = 3
+    elev = 0
+    azim = [180 - 12*i for i in range(30)]
+    for theta in azim:
+        R, T = pytorch3d.renderer.cameras.look_at_view_transform(dist=dist, elev=elev, azim=theta)
+        cameras = pytorch3d.renderer.FoVPerspectiveCameras(
+            R=R, T=T, fov=60, device=device
+        )
+
+        rend = renderer(point_cloud, cameras=cameras, lights=lights)
+        rend = rend.cpu().numpy()[0, ..., :3]  # (B, H, W, 4) -> (H, W, 3)
+        rends.append((rend * 255).astype(np.uint8))
+
+    imageio.mimsave(path, rends, fps=15, loop=0)
