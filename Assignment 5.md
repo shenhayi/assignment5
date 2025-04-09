@@ -135,3 +135,26 @@ I tried with angle 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180.
 Here is how accuracy changes with rotation angle on classification and segmentation tasks.
 
 ![plot](/home/haoyus/16825/PS/assignment5/output/plot.png)
+
+idx 899:
+
+angle 0:
+
+GT class: lamp
+
+![gt_cls_idx899_0](/home/haoyus/16825/PS/assignment5/output/gt_cls_idx899_0.gif)
+
+Pred class: lamp
+
+![pred_cls_idx899_0](/home/haoyus/16825/PS/assignment5/output/pred_cls_idx899_0.gif)
+
+angle 15:
+
+GT class: lamp
+
+![gt_cls_idx899_15](/home/haoyus/16825/PS/assignment5/output/gt_cls_idx899_15.gif)
+
+Pred class: vase
+
+![pred_cls_idx899_15](/home/haoyus/16825/PS/assignment5/output/pred_cls_idx899_15.gif)
+
