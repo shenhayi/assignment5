@@ -2,7 +2,7 @@
 
 ## Q1. Classification Model
 
-accuracy with best model: 0.9769
+overall accuracy with best model: 0.9769
 
 ***Matched:***
 
@@ -25,6 +25,16 @@ GT of index 645:
 Pred of index 645:
 
 ![pred_cls_idx_645](/home/haoyus/16825/PS/assignment5/output/pred_cls_idx_645.gif)
+
+**Lamp:**
+
+GT of index 900:
+
+![gt_cls_idx900](/home/haoyus/16825/PS/assignment5/output/gt_cls_idx900.gif)
+
+Pred of index 900:
+
+![pred_cls_idx900](/home/haoyus/16825/PS/assignment5/output/pred_cls_idx900.gif)
 
 ***Failure:***
 
@@ -64,6 +74,64 @@ The correct class should be **lamp**, but wrongly predicted as **vase**.
 
 ## Q2. Segmentation Model 
 
-accuracy with best model: 0.8979
+overall accuracy with best model: 0.8979
+
+idx 176: accuracy: 96.65%
+
+GT:
+
+![gt_seg_misc_176](/home/haoyus/16825/PS/assignment5/output/gt_seg_misc_176.gif)
+
+Pred:
+
+![pred_seg_misc_176](/home/haoyus/16825/PS/assignment5/output/pred_seg_misc_176.gif)
+
+idx 281: accuracy: 98.39%
+
+GT:
+
+![gt_seg_misc_281](/home/haoyus/16825/PS/assignment5/output/gt_seg_misc_281.gif)
+
+Pred:
+
+![pred_seg_misc_281](/home/haoyus/16825/PS/assignment5/output/pred_seg_misc_281.gif)
+
+idx 344: accuracy: 90.92%
+
+GT:
+
+![gt_seg_leg_344](/home/haoyus/16825/PS/assignment5/output/gt_seg_leg_344.gif)
+
+Pred:
+
+![pred_seg_leg_344](/home/haoyus/16825/PS/assignment5/output/pred_seg_leg_344.gif)
+
+idx 386: accuracy: 62.32%
+
+GT:
+
+![gt_seg_misc_386](/home/haoyus/16825/PS/assignment5/output/gt_seg_misc_386.gif)
+
+Pred:
+
+![pred_seg_misc_386](/home/haoyus/16825/PS/assignment5/output/pred_seg_misc_386.gif)
+
+idx 605: accuracy: 57.45%
+
+GT:
+
+![gt_seg_misc_605](/home/haoyus/16825/PS/assignment5/output/gt_seg_misc_605.gif)
+
+Pred:
+
+![pred_seg_misc_605](/home/haoyus/16825/PS/assignment5/output/pred_seg_misc_605.gif)
 
 ## Q3. Robustness Analysis
+
+I first try with rotating the poindcloud and run eval_cls.py and eval_seg.py.
+
+I tried with angle 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180.
+
+Here is how accuracy changes with rotation angle on classification and segmentation tasks.
+
+![plot](/home/haoyus/16825/PS/assignment5/output/plot.png)
