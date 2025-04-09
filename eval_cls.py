@@ -148,10 +148,10 @@ if __name__ == "__main__":
                 print(f"{i}\t{class_names[gt]}\t{class_names[pred]}\t{match}")
                 
                 # Visualize if prediction doesn't match ground truth
-                if gt != pred:
-                    print(f"\nVisualizing mismatch for object {i}:")
-                    viz_cls(args, test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt_{class_names[gt]}.gif", args.device)
-                    viz_cls(args, test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred_{class_names[pred]}.gif", args.device)
+                # if gt != pred:
+                #     print(f"\nVisualizing mismatch for object {i}:")
+                #     viz_cls(args, test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt_{class_names[gt]}.gif", args.device)
+                #     viz_cls(args, test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred_{class_names[pred]}.gif", args.device)
 
         # Visualize specified object
         if not args.eval_all:
