@@ -166,10 +166,10 @@ if __name__ == '__main__':
                 print(f"{i}\t{seg_class_names[gt_common]}\t{seg_class_names[pred_common]}\t{match} ({point_accuracy:.2%})")
                 
                 # Visualize if prediction doesn't match ground truth
-                if gt_common != pred_common:
-                    print(f"\nVisualizing mismatch for object {i}:")
-                    viz_seg(test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt_{seg_class_names[gt_common]}.gif", args.device)
-                    viz_seg(test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred_{seg_class_names[pred_common]}.gif", args.device)
+                # if gt_common != pred_common:
+                #     print(f"\nVisualizing mismatch for object {i}:")
+                #     viz_seg(test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt_{seg_class_names[gt_common]}.gif", args.device)
+                #     viz_seg(test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred_{seg_class_names[pred_common]}.gif", args.device)
 
         # Visualize specified object
         if not args.eval_all:
