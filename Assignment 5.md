@@ -158,3 +158,9 @@ Pred class: vase
 
 ![pred_cls_idx899_15](/home/haoyus/16825/PS/assignment5/output/pred_cls_idx899_15.gif)
 
+seg:
+
+583     leg     leg     ✓ (85.39%) angle 0
+
+583     leg     misc    ✗ (71.25%) angle 15
+
