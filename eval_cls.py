@@ -6,6 +6,16 @@ from utils import create_dir, viz_cls
 import os
 import pytorch3d.transforms
 
+# Define class names
+class_names = {
+    0: "chair",
+    1: "vase",
+    2: "lamp",
+    3: "guitar",
+    4: "laptop",
+    5: "motorbike"
+}
+
 def create_parser():
     """Creates a parser for command-line arguments.
     """
@@ -25,7 +35,7 @@ def create_parser():
     parser.add_argument('--exp_name', type=str, default="exp", help='The name of the experiment')
     parser.add_argument("--eval_all", type=bool, default=False, help="Evaluate all objects")
     parser.add_argument("--input_all", type=bool, default=False, help="Input all objects")
-    parser.add_argument("--eval_num", type=int, default=100, help="Evaluate how many objects")
+    parser.add_argument("--eval_num", type=int, default=10, help="Evaluate how many objects")
     
     # Experiment parameters
     parser.add_argument('--angle', type=float, default=0, help='Rotation angle in degrees for robustness test')
@@ -77,15 +87,15 @@ def run_point_experiment(model, test_data, test_label, args):
         print(f"Accuracy with {num_points} points: {accuracy:.4f}")
 
     # Plot results
-    import matplotlib.pyplot as plt
-    plt.figure(figsize=(10, 6))
-    plt.plot(point_counts, accuracies, 'b-o')
-    plt.xlabel('Number of Points')
-    plt.ylabel('Accuracy')
-    plt.title('Model Accuracy vs Number of Points')
-    plt.grid(True)
-    plt.savefig(f"{args.output_dir}/point_experiment.png")
-    plt.close()
+    # import matplotlib.pyplot as plt
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(point_counts, accuracies, 'b-o')
+    # plt.xlabel('Number of Points')
+    # plt.ylabel('Accuracy')
+    # plt.title('Model Accuracy vs Number of Points')
+    # plt.grid(True)
+    # plt.savefig(f"{args.output_dir}/point_experiment.png")
+    # plt.close()
 
 if __name__ == "__main__":
     parser = create_parser()
@@ -124,8 +134,8 @@ if __name__ == "__main__":
         # Check all objects and visualize mismatches
         if args.eval_all:
             print("\nChecking all objects:")
-            print("idx\tGT\tPred\tMatch")
-            print("-" * 30)
+            print("idx\tGT\t\tPred\t\tMatch")
+            print("-" * 40)
             num = 0
             if args.input_all: 
                 num = len(test_label)
@@ -135,16 +145,16 @@ if __name__ == "__main__":
                 gt = test_label[i].item()
                 pred = pred_label[i].item()
                 match = "✓" if gt == pred else "✗"
-                print(f"{i}\t{gt}\t{pred}\t{match}")
+                print(f"{i}\t{class_names[gt]}\t{class_names[pred]}\t{match}")
                 
                 # Visualize if prediction doesn't match ground truth
                 if gt != pred:
                     print(f"\nVisualizing mismatch for object {i}:")
-                    viz_cls(args, test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt_{gt}.gif", args.device)
-                    viz_cls(args, test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred_{pred}.gif", args.device)
+                    viz_cls(args, test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt_{class_names[gt]}.gif", args.device)
+                    viz_cls(args, test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred_{class_names[pred]}.gif", args.device)
 
         # Visualize specified object
-        # if not args.eval_all:
-        #     viz_cls(args, test_data[args.i], test_label[args.i], "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
-        #     viz_cls(args, test_data[args.i], pred_label[args.i], "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)
+        if not args.eval_all:
+            viz_cls(args, test_data[args.i], test_label[args.i], "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
+            viz_cls(args, test_data[args.i], pred_label[args.i], "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)
 

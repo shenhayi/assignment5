@@ -100,6 +100,16 @@ if __name__ == '__main__':
 
     create_dir(args.output_dir)
 
+    # Define segmentation class names
+    seg_class_names = {
+        0: "seat",
+        1: "back",
+        2: "leg",
+        3: "arm",
+        4: "wheel",
+        5: "misc"
+    }
+
     # ------ TO DO: Initialize Model for Segmentation Task  ------
     model = seg_model(args.device, args.num_seg_class)
     
@@ -131,8 +141,8 @@ if __name__ == '__main__':
         # Check all objects and visualize mismatches
         if args.eval_all:
             print("\nChecking all objects:")
-            print("idx\tGT\tPred\tMatch")
-            print("-" * 30)
+            print("idx\tGT\t\tPred\t\tMatch")
+            print("-" * 40)
             num = 0
             if args.input_all: 
                 num = len(test_label)
@@ -142,16 +152,29 @@ if __name__ == '__main__':
                 # For segmentation, we need to compare point-wise
                 gt = test_label[i]
                 pred = pred_label[i]
-                match = "✓" if torch.all(gt == pred) else "✗"
-                print(f"{i}\t{gt[0].item()}\t{pred[0].item()}\t{match}")
+                
+                # Get the most common label for both GT and prediction
+                gt_common = torch.mode(gt).values.item()
+                pred_common = torch.mode(pred).values.item()
+                
+                # Consider it a match if the most common labels are the same
+                match = "✓" if gt_common == pred_common else "✗"
+                
+                # Calculate point-wise accuracy for this object
+                point_accuracy = (gt == pred).float().mean().item()
+                
+                print(f"{i}\t{seg_class_names[gt_common]}\t{seg_class_names[pred_common]}\t{match} ({point_accuracy:.2%})")
                 
                 # Visualize if prediction doesn't match ground truth
-                if not torch.all(gt == pred):
+                if gt_common != pred_common:
                     print(f"\nVisualizing mismatch for object {i}:")
-                    viz_seg(test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt.gif", args.device)
-                    viz_seg(test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred.gif", args.device)
+                    viz_seg(test_data[i], gt, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_gt_{seg_class_names[gt_common]}.gif", args.device)
+                    viz_seg(test_data[i], pred, f"{args.output_dir}/mismatch_{args.exp_name}_{i}_pred_{seg_class_names[pred_common]}.gif", args.device)
 
         # Visualize specified object
         if not args.eval_all:
             viz_seg(test_data[args.i], test_label[args.i], "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
             viz_seg(test_data[args.i], pred_label[args.i], "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)
+            
+        # give overall accuracy
+        print(f"\nOverall accuracy: {accuracy:.4f}")
